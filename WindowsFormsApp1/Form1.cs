@@ -113,7 +113,7 @@ namespace WindowsFormsApp1
             if (textBox5.Text.Length < 0) return;
             Curtable.DefaultView.RowFilter = $"Name LIKE '%{textBox5.Text}%'";
             RedandYellow();
-        }
+        }//
         private void textBox6_TextChanged(object sender, EventArgs e)
         {
             if (textBox6.Text.Length < 0) return;
