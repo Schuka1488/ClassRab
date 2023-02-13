@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
@@ -19,7 +20,8 @@ namespace WindowsFormsApp1
         DBclass db = new DBclass(); 
         class DBclass 
         {
-            MySqlConnection connection = new MySqlConnection("server=10.90.12.110;port=33333;username=st_3_20_21;password=15733563;database=is_3_20_st21_KURS");
+            MySqlConnection connection = new MySqlConnection("server=chuc.caseum.ru;port=33333;username=st_3_20_21;password=15733563;database=is_3_20_st21_KURS");
+            //MySqlConnection connection = new MySqlConnection("server=10.90.12.110;port=33333;username=st_3_20_21;password=15733563;database=is_3_20_st21_KURS");
             public void openConnection() 
             {
                 if (connection.State == ConnectionState.Closed) 
@@ -71,7 +73,8 @@ namespace WindowsFormsApp1
                 MySqlCommand cmd = new MySqlCommand($"DELETE FROM Pyaterochka WHERE IDtovar = {id_selected_rows}", db.getConnection());
                 MessageBox.Show(cmd.ExecuteNonQuery() > 0 ? "Данные удалены" : "Данные  не удалены", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                 db.closeConnection();
-                RedandYellow();
+                
+                dataGridView1.Invoke(new Action(() => RedandYellow()));
             }
             catch
             {
@@ -116,9 +119,28 @@ namespace WindowsFormsApp1
         }//
         private void textBox6_TextChanged(object sender, EventArgs e)
         {
-            if (textBox6.Text.Length < 0) return;
-            Curtable.DefaultView.RowFilter = $"Sell LIKE '%{textBox6.Text}%'";
-            RedandYellow();
+
+            DateTime editDt = DateTime.Now.AddDays(1);
+
+            Regex regex = new Regex($@"\w*{textBox6.Text}\w*", RegexOptions.Compiled | RegexOptions.Singleline);
+            dataGridView1.Invoke(new Action(()=>{
+                dataGridView1.CurrentCell = null;
+                for (int i = 0; i < dataGridView1.Rows.Count; i++)
+                {
+                    DataGridViewRow row = dataGridView1.Rows[i];
+                    if (regex.IsMatch(row.Cells[1].Value.ToString()))
+                    {
+                        dataGridView1.Rows[i].Visible = true;
+                    }
+                    else
+                    {
+                        dataGridView1.Rows[i].Visible = false;
+                    }
+
+                }
+                
+                RedandYellow();
+            }));
         }
         private void RedandYellow()
         {
